@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YuwaVoice Nepal — Civic Technology Prototype</title>
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#ffffff; --text:#172033; --muted:#667085;
+      --primary:#0b63ce; --primary2:#084b9b; --border:#e4e7ec;
+      --success:#17834b; --danger:#d92d20; --shadow:0 12px 35px rgba(16,24,40,.08);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    button,input{font:inherit}
+    .layout{display:flex;min-height:100vh}
+    aside{width:250px;background:#0d1b2a;color:#fff;padding:22px 16px;position:fixed;inset:0 auto 0 0;z-index:10}
+    .brand{display:flex;align-items:center;gap:10px;padding:8px 10px 28px;font-weight:800;font-size:20px}
+    .flag{font-size:25px}
+    .brand small{display:block;font-size:10px;color:#aab7c7;font-weight:500;margin-top:2px}
+    nav a{display:flex;gap:12px;align-items:center;color:#c9d4e2;text-decoration:none;padding:12px 13px;border-radius:10px;margin:5px 0;font-size:14px}
+    nav a:hover,nav a.active{background:#173451;color:#fff}
+    .side-note{position:absolute;bottom:20px;left:18px;right:18px;background:#13283d;padding:13px;border-radius:12px;font-size:11px;line-height:1.5;color:#b9c6d5}
+    main{margin-left:250px;width:calc(100% - 250px);padding:26px 34px 50px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:25px}
+    .topbar h1{margin:0;font-size:28px}
+    .topbar p{margin:5px 0 0;color:var(--muted);font-size:14px}
+    .pill{background:#e9f2ff;color:#0b63ce;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .stat,.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+    .stat{padding:20px}
+    .stat .icon{font-size:22px}
+    .stat .label{color:var(--muted);font-size:12px;margin-top:12px}
+    .stat .value{font-size:27px;font-weight:800;margin-top:3px}
+    .stat .sub{font-size:11px;color:var(--muted);margin-top:4px}
+    section{margin-top:26px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
+    .section-head h2{font-size:19px;margin:0}
+    .section-head span{font-size:12px;color:var(--muted)}
+    .candidates{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .candidate{padding:20px}
+    .candidate-top{display:flex;align-items:center;gap:13px}
+    .avatar{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#e9f2ff;color:#0b63ce;font-weight:800;font-size:18px}
+    .candidate h3{margin:0;font-size:16px}
+    .candidate .role{font-size:12px;color:var(--muted);margin-top:3px}
+    .tag{display:inline-block;margin:15px 5px 0 0;padding:6px 9px;background:#f2f4f7;border-radius:999px;font-size:11px;color:#475467}
+    .candidate button,.primary{border:0;background:var(--primary);color:#fff;padding:10px 13px;border-radius:9px;font-weight:700;cursor:pointer;margin-top:16px}
+    .candidate button:hover,.primary:hover{background:var(--primary2)}
+    .columns{display:grid;grid-template-columns:1.35fr .9fr;gap:16px}
+    .card{padding:20px}
+    .issues table{width:100%;border-collapse:collapse;font-size:13px}
+    .issues th,.issues td{padding:13px 8px;border-bottom:1px solid var(--border);text-align:left}
+    .issues th{color:var(--muted);font-size:11px;text-transform:uppercase}
+    .issue-status{font-size:11px;padding:5px 8px;border-radius:999px;background:#eefbf3;color:var(--success)}
+    .poll-option{border:1px solid var(--border);padding:12px;border-radius:10px;margin:9px 0;cursor:pointer;display:block}
+    .poll-option:hover{border-color:#8bb8f0;background:#f8fbff}
+    .poll-option input{margin-right:8px}
+    .results-row{margin:15px 0}
+    .results-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+    .bar{height:9px;background:#edf0f5;border-radius:99px;overflow:hidden}
+    .fill{height:100%;background:var(--primary);border-radius:99px}
+    .notice{margin-top:22px;padding:14px 16px;border-radius:12px;background:#fff7e6;border:1px solid #f3d39a;color:#805b14;font-size:12px;line-height:1.55}
+    .footer{margin-top:28px;color:var(--muted);font-size:11px;text-align:center}
+    .modal{position:fixed;inset:0;background:rgba(10,20,30,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:30}
+    .modal.show{display:flex}
+    .modal-box{background:white;max-width:560px;width:100%;border-radius:18px;padding:25px;position:relative}
+    .close{position:absolute;right:18px;top:14px;border:0;background:#f2f4f7;border-radius:50%;width:32px;height:32px;cursor:pointer}
+    .modal-box h2{margin-top:0}
+    .modal-box p{color:var(--muted);line-height:1.65;font-size:14px}
+    @media(max-width:1000px){
+      aside{width:205px} main{margin-left:205px;width:calc(100% - 205px);padding:22px}
+      .grid{grid-template-columns:repeat(2,1fr)} .candidates{grid-template-columns:1fr}
+    }
+    @media(max-width:720px){
+      aside{position:static;width:100%;height:auto;padding:12px}
+      .layout{display:block} nav{display:flex;overflow:auto} nav a{white-space:nowrap}
+      .side-note{display:none} main{margin:0;width:100%;padding:18px}
+      .grid,.columns{grid-template-columns:1fr}
+      .topbar{align-items:flex-start;flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand">
+      <span class="flag">🇳🇵</span>
+      <div>YuwaVoice Nepal<small>CIVIC-TECH PROTOTYPE</small></div>
+    </div>
+    <nav>
+      <a class="active" href="#dashboard">📊 Dashboard</a>
+      <a href="#candidates">👥 Candidates</a>
+      <a href="#issues">📋 Issues</a>
+      <a href="#poll">🗳️ Youth Poll</a>
+      <a href="#results">📈 Results</a>
+    </nav>
+    <div class="side-note">
+      Demo environment only.<br>
+      Candidate profiles and poll numbers are fictional for this university prototype.
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar" id="dashboard">
+      <div>
+        <h1>YuwaVoice Dashboard</h1>
+        <p>A neutral platform for candidate information and youth civic preferences.</p>
+      </div>
+      <div class="pill">Prototype v1.0</div>
+    </div>
+
+    <div class="grid">
+      <div class="stat"><div class="icon">👥</div><div class="label">Demo Participants</div><div class="value">1,240</div><div class="sub">Sample data only</div></div>
+      <div class="stat"><div class="icon">🌏</div><div class="label">Countries Represented</div><div class="value">18</div><div class="sub">Prototype dataset</div></div>
+      <div class="stat"><div class="icon">👤</div><div class="label">Candidate Profiles</div><div class="value">3</div><div class="sub">Fictional candidates</div></div>
+      <div class="stat"><div class="icon">📋</div><div class="label">Issues Compared</div><div class="value">6</div><div class="sub">Standard questions</div></div>
+    </div>
+
+    <section id="candidates">
+      <div class="section-head"><h2>Candidate Profiles</h2><span>Fictional demo candidates</span></div>
+      <div class="candidates">
+        <div class="card candidate">
+          <div class="candidate-top"><div class="avatar">A</div><div><h3>Candidate A</h3><div class="role">Fictional public representative</div></div></div>
+          <span class="tag">Digital Economy</span><span class="tag">Youth Jobs</span><span class="tag">Education</span>
+          <button onclick="openProfile('Candidate A','Priorities include digital services, youth employment, education access and technology infrastructure. These statements are fictional for demonstration.')">View profile</button>
+        </div>
+        <div class="card candidate">
+          <div class="candidate-top"><div class="avatar">B</div><div><h3>Candidate B</h3><div class="role">Fictional public representative</div></div></div>
+          <span class="tag">Entrepreneurship</span><span class="tag">Innovation</span><span class="tag">Skills</span>
+          <button onclick="openProfile('Candidate B','Priorities include entrepreneurship, innovation, practical skills and support for small businesses. These statements are fictional for demonstration.')">View profile</button>
+        </div>
+        <div class="card candidate">
+          <div class="candidate-top"><div class="avatar">C</div><div><h3>Candidate C</h3><div class="role">Fictional public representative</div></div></div>
+          <span class="tag">Local Development</span><span class="tag">Public Services</span><span class="tag">Jobs</span>
+          <button onclick="openProfile('Candidate C','Priorities include local development, public services, employment and community infrastructure. These statements are fictional for demonstration.')">View profile</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="issues">
+      <div class="section-head"><h2>Policy Comparison</h2><span>Same questions for every candidate</span></div>
+      <div class="card issues">
+        <table>
+          <thead><tr><th>Issue</th><th>Candidate A</th><th>Candidate B</th><th>Candidate C</th></tr></thead>
+          <tbody>
+            <tr><td>Youth employment</td><td>Priority stated</td><td>Priority stated</td><td>Priority stated</td></tr>
+            <tr><td>Digital economy</td><td>Priority stated</td><td>Position published</td><td>Position published</td></tr>
+            <tr><td>Education</td><td>Priority stated</td><td>Position published</td><td>Priority stated</td></tr>
+            <tr><td>Entrepreneurship</td><td>Position published</td><td>Priority stated</td><td>Priority stated</td></tr>
+            <tr><td>Public services</td><td>Position published</td><td>Position published</td><td>Priority stated</td></tr>
+            <tr><td>Local development</td><td>Position published</td><td>Position published</td><td>Priority stated</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="poll">
+      <div class="section-head"><h2>Youth Preference Poll</h2><span>Non-binding prototype poll</span></div>
+      <div class="columns">
+        <div class="card">
+          <h3>Which profile matches your priorities?</h3>
+          <label class="poll-option"><input type="radio" name="candidate" value="A"> Candidate A</label>
+          <label class="poll-option"><input type="radio" name="candidate" value="B"> Candidate B</label>
+          <label class="poll-option"><input type="radio" name="candidate" value="C"> Candidate C</label>
+          <button class="primary" onclick="submitVote()">Submit preference</button>
+          <p id="voteMessage" style="font-size:12px;color:#667085"></p>
+        </div>
+        <div class="card" id="results">
+          <h3>Demo Results</h3>
+          <div class="results-row"><div class="results-label"><span>Candidate A</span><b>34%</b></div><div class="bar"><div class="fill" style="width:34%"></div></div></div>
+          <div class="results-row"><div class="results-label"><span>Candidate B</span><b>41%</b></div><div class="bar"><div class="fill" style="width:41%"></div></div></div>
+          <div class="results-row"><div class="results-label"><span>Candidate C</span><b>25%</b></div><div class="bar"><div class="fill" style="width:25%"></div></div></div>
+          <small style="color:#667085">Illustrative numbers — not a real poll or election result.</small>
+        </div>
+      </div>
+    </section>
+
+    <div class="notice">
+      <b>Prototype notice:</b> YuwaVoice is a university startup concept, not an official election system.
+      This version does not verify identity, store real votes, connect to Nepal's Election Commission, or determine election results.
+    </div>
+
+    <div class="footer">YuwaVoice Nepal © 2026 · Civic technology concept by Diwash</div>
+  </main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <button class="close" onclick="closeProfile()">×</button>
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+    <button class="primary" onclick="closeProfile()">Close</button>
+  </div>
+</div>
+
+<script>
+  function openProfile(title,text){
+    document.getElementById('modalTitle').textContent=title;
+    document.getElementById('modalText').textContent=text;
+    document.getElementById('modal').classList.add('show');
+  }
+  function closeProfile(){document.getElementById('modal').classList.remove('show')}
+  function submitVote(){
+    const selected=document.querySelector('input[name="candidate"]:checked');
+    const message=document.getElementById('voteMessage');
+    if(!selected){
+      message.textContent='Please select one profile first.';
+      message.style.color='#d92d20';
+      return;
+    }
+    message.textContent='Demo preference submitted for Candidate '+selected.value+'. No real vote was recorded.';
+    message.style.color='#17834b';
+  }
+  document.getElementById('modal').addEventListener('click',e=>{
+    if(e.target.id==='modal') closeProfile();
+  });
+</script>
+</body>
+</html>
